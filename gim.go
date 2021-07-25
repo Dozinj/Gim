@@ -17,18 +17,18 @@ func New()*Engine{
 }
 
 //添加静态路由
-func (engine *Engine)addRouter(method,patten string,handler HandlerFunc){
+func (engine *Engine)addRoute(method,patten string,handler HandlerFunc){
 	engine.router.addRouter(method,patten,handler)
 }
 
 //添加GET路由
 func (engine *Engine)GET(patten string,handler HandlerFunc){
-	engine.addRouter("GET",patten,handler)
+	engine.addRoute("GET",patten,handler)
 }
 
 //添加POST路由
 func (engine *Engine)POST(patten string,handler HandlerFunc){
-	engine.addRouter("POST",patten,handler)
+	engine.addRoute("POST",patten,handler)
 }
 
 func (engine *Engine)ServeHTTP(w http.ResponseWriter,r *http.Request){
