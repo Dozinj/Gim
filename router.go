@@ -11,14 +11,13 @@ type router struct {
 	handlers map[string]HandlerFunc
 }
 
-func newRouter()*router{
-	return &router{roots:make(map[string]*node),
-		handlers:make(map[string]HandlerFunc)}
+func newRouter() *router {
+	return &router{roots: make(map[string]*node),
+		handlers: make(map[string]HandlerFunc)}
 }
 
-
 //将pattern 拆分为part切片
-func parsePattern(pattern string)[]string {
+func parsePattern(pattern string) []string {
 	vs := strings.Split(pattern, "/")
 	parts := make([]string, 0)
 
@@ -34,7 +33,7 @@ func parsePattern(pattern string)[]string {
 }
 
 //路由注册绑定HandlerFunc方法
-func (r *router)addRouter(method,pattern string,handler HandlerFunc) {
+func (r *router) addRouter(method, pattern string, handler HandlerFunc) {
 	log.Printf("Route %s - %s\n", method, pattern)
 	parts := parsePattern(pattern)
 	_, ok := r.roots[method]
@@ -49,11 +48,10 @@ func (r *router)addRouter(method,pattern string,handler HandlerFunc) {
 	r.handlers[key] = handler
 }
 
-
 //getRoute 函数中，还解析了:和*两种匹配符的参数，返回一个 map
 //例如/p/go/doc匹配到/p/:lang/doc，解析结果为：{lang: "go"}，
 ///static/css/geek_tutu.css匹配到/static/*filepath，解析结果为{filepath: "css/geek_tutu.css"}。
-func (r *router)getRoute(method string,path string)(*node,map[string]string) {
+func (r *router) getRoute(method string, path string) (*node, map[string]string) {
 	searchParts := parsePattern(path)
 	params := make(map[string]string, 0)
 
@@ -83,15 +81,13 @@ func (r *router)getRoute(method string,path string)(*node,map[string]string) {
 	return nil, nil
 }
 
-
-
 //在调用匹配到的handler前，将解析出来的路由参数赋值给了c.Params
 //在路由注册玩后，根据路由选择处理器方法
-func (r *router)handler(c *Context) {
+func (r *router) handler(c *Context) {
 	node, params := r.getRoute(c.Method, c.Path)
 	if node != nil {
 		c.Params = params
-		key := c.Method + "-" + c.Path
+		key := c.Method + "-" + node.pattern
 		r.handlers[key](c)
 	} else {
 		c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
